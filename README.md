@@ -1,111 +1,110 @@
-# Agentic for VS Code
+<div align="center">
 
-Your Agentic server's chat, inside VS Code — the same app the Agentic desktop client shows, with tools that work in
-your workspace.
+<img src="docs/logo.png" alt="Agentic" width="288">
 
-**Setting it up:** `SETUP.md` in this repository covers installing, building from source and signing in to your server.
+**Agentic for VS Code: your Agentic server's chat inside VS Code, with tools that read, edit and run code in your workspace.**
 
-## What you get
+![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)
+![VS Code 1.90+](https://img.shields.io/badge/VS%20Code-1.90%2B-007ACC)
 
-- **The full Agentic chat** in the activity bar (or an editor tab): every provider model and custom model (Axiom,
-  Onyx, Zenith…), goals, plan mode, reasoning effort, web search, knowledge bases, attachments, images, saved prompts,
-  slash commands, multitask panes, history — everything the web and desktop apps have, always in step with your server.
-- **Workspace tools for the model** (the "Workspace" chip in the message box turns them on or off):
-  - `read_file`, `list_dir`, `glob_files`, `grep` — read and search, including unsaved changes in open editors
-  - `write_file`, `edit_file` — changes go through VS Code, so they show in the editor and can be undone (Ctrl+Z)
-  - `vscode_diagnostics` — errors and warnings from the Problems panel, to check its own edits
-  - `vscode_editor_context` — the active file, the selection and the open editors ("explain *this*")
-  - `run_command` — shell commands in the workspace (output also in *Agentic: Commands*)
-  - `open_file` — show you a file at a line
-  - `agentic_api` — the Agentic REST API as you (agents, tasks, results…)
+[Install](#install) · [Features](#features) · [Settings](#settings) · [Setup guide](SETUP.md) · [Agentic server](https://github.com/smurflabs/Agentic)
 
-  Changes, commands and API writes are approved in the chat according to its permission mode, exactly as in the
-  desktop app. Paths outside the open workspace folders are refused.
-- **Run and test the project** (like Claude Desktop's preview): the **Run** chip in the message box (or `/run`; `/run <name>`,
-  `/run stop`, `/run share`), the ▶ button on the chat view and *Agentic: Run Project…* list the ways to run each workspace folder — `.agentic/launch.json`
-  or Claude Code's `.claude/launch.json` (`{"configurations": [{"name", "runtimeExecutable", "runtimeArgs", "cwd", "port"}]}`;
-  `command` and `kind`: web | app | test | static also work), else what the project shows (package.json scripts, a static
-  site served by a built-in server, Django/Flask/FastAPI, pytest, .NET, Go, Rust, a Makefile). Each run gets a terminal tab
-  ("Agentic: Dev server"; closing it stops the run). A web app opens in the Simple Browser beside the chat once its address
-  appears; tests show their output and exit code in the chat, with **Ask Agentic to fix it**. The model's `preview` tool does
-  the same (status, start, open, stop, share).
-- **Read aloud and Dictation mode** with the server's voices: an answer's speaker button reads it aloud as the speech server
-  makes it, and Dictation mode (the headset button, or `/dictation`) talks with the chat. VS Code's views cannot use the
-  microphone, so the extension records it (Windows: PowerShell with the system's waveIn API, nothing to install; Linux and
-  macOS: see `agentic.speech.recorder`); a pause ends your turn, the server turns it into text, and each answer's short
-  spoken summary is spoken.
-- **Images, Music and Audio**: *Agentic: Images*, *Agentic: Music* and *Agentic: Audio* (also in the chat view's ⋯ menu)
-  open those tabs of the web app in an editor tab: pictures from Stable Diffusion, songs from Suno, speech and voices.
-- **Artifacts** (*Agentic: Artifacts: Run and Share Projects*, the chat view's ⋯ menu, or `/artifacts`): the projects and the
-  pages and drawings from your chats, to run or share. **Share** uploads a project's website (its build — `dist`, `build`,
-  `out` … — or a static site's folder; no hidden files or `node_modules`) or a chat page and gives a public link anyone can
-  open; sharing the project again updates the same link.
-- **Your VS Code as a device**: while VS Code is open, chats started in the web or desktop app can use these tools too.
-- **Editor commands** (right-click → *Agentic*, or the Command Palette):
-  - *Ask About Selection* (Ctrl+Alt+L) — puts the selected code into the message box
-  - *Explain This Code*, *Fix This Code* — with the problems VS Code reports for it
-  - *Review This File*, *Fix Problems in This File*
-  - *Add File to Chat* — attaches a file (also from the Explorer and editor tabs)
-  - *New Chat*, *Open Chat in Editor*, *Open Agentic in Browser*, *Reload Chat*
-- **Multitask**: up to four chats side by side, each live at once — *Agentic: Multitask* (the layout button on the chat
-  view). It opens in a wide editor tab (the side bar is too narrow for it); editor commands go to the focused pane.
-- **Updates itself** from your Agentic server: when VS Code starts and every few hours it checks the server's
-  *Apps & updates*, downloads a newer build, checks its SHA-256 and installs it (you are asked to reload the window).
-  *Agentic: Check for Updates* checks now.
-- Follows VS Code's light or dark theme, with calm page animations (`agentic.chat.animations`; VS Code's
-  *Reduce Motion* turns them off). Open the chat with **Ctrl+Alt+A**.
-- **Agentic: Keyboard Shortcuts** changes any shortcut: the chat's own (send, new line, new chat, palette … — saved to your Agentic
-  account, so the browser and the desktop app use them too) or VS Code's for Agentic's commands (VS Code's Keyboard Shortcuts,
-  filtered to Agentic, saved in your keybindings.json).
+</div>
 
-## Sign in
+---
 
-Run **Agentic: Sign In** (or click *Agentic: Sign in* in the status bar) and enter your server's address and an API
-key (Agentic web app → your account → API keys). The key is kept in VS Code's secret storage. As with the Agentic CLI,
-the `AGENTIC_SERVER` and `AGENTIC_API_KEY` environment variables work too.
+## What is it?
 
-## How it works
+Agentic for VS Code brings the chat of your [Agentic server](https://github.com/smurflabs/Agentic) into the editor. It is the same app as in the browser and the desktop app, with the same models, conversations and settings. The model gets tools that work through VS Code itself: its edits show in the editor and can be undone, it sees the Problems panel, and it runs commands in your workspace with your approval.
 
-Like the desktop app, the extension runs a small web server on `127.0.0.1` that forwards to your Agentic server with
-the API key added (the page never sees the key) and adds a VS Code layer to the app. The layer offers the workspace
-tools through the chat's client-tool interface (`window.chatClient`); the tools run in the extension through VS Code's
-APIs. The layer talks to the extension with a per-launch token.
+The extension runs a small local server on `127.0.0.1`. That server forwards requests to your Agentic server and adds your API key, so the page never sees the key.
+
+## Features
+
+### The full Agentic chat
+
+- **Chat with every model your account may use,** including custom models. Goals, plan mode, reasoning effort, web search, knowledge bases, attachments, images, saved prompts and slash commands all work here.
+- **Two views:** **Full app** has every page of the web app, and **Lite mode** shows only the chat, like Claude Code.
+- **Multitask:** up to four chats side by side, all live at once.
+- **Always current:** history and live answers stay in step with the web and desktop apps.
+
+### Tools that work through VS Code
+
+- **Read and search** the workspace, including unsaved changes in open editors.
+- **Edits go through VS Code,** so they show in the editor and Ctrl+Z undoes them. You can review an edit before it is applied.
+- **Problems panel:** the model reads VS Code's diagnostics to check its own work.
+- **Editor context:** the active file, the selection and the open editors ("explain *this*").
+- **Commands** in the workspace, in PowerShell or bash.
+- **Local MCP servers,** including the ones you set up for VS Code or Claude Code, with sign-in for hosted servers.
+- **Approvals:** changes and commands follow the chat's permission mode, and paths outside the workspace are refused.
+- **Use from other windows:** while VS Code is open, chats in the web and desktop apps can use this workspace's tools.
+
+### Editor commands
+
+- **Ask About Selection** (Ctrl+Alt+L), **Explain This Code**, **Fix This Code** and **Fix This Problem**, with the problems VS Code reports for that code.
+- **Review This File**, **Fix Problems in This File** and **Add File to Chat**, from the editor, its tabs or the Explorer.
+- **Open the chat** with Ctrl+Alt+A, or in an editor tab.
+
+### Run, preview and share
+
+- **Run Project…** finds how each workspace folder runs: `.agentic/launch.json` or `.claude/launch.json`, or what the project shows (npm scripts, static sites, Python, .NET, Go, Rust, Makefiles).
+- **Runs in a terminal:** each run gets its own terminal tab, and web apps open in the Simple Browser beside the chat.
+- **Artifacts:** projects and chat pages can be shared as public links.
+
+### And more
+
+- **Voice:** answers read aloud and hands-free Dictation mode with the server's voices. The extension records the microphone itself.
+- **Media tabs:** Images, Music and Audio open the server's media tabs in an editor tab.
+- **Agentic CLI link:** the CLI's `/ide` sends your selection, shows its edits as diffs here and reads the Problems panel.
+- **Keyboard shortcuts:** change the chat's keys and VS Code's keys for Agentic in one place.
+- **Updates:** the extension installs new versions from your Agentic server.
+
+## Install
+
+1. Download `agentic-vscode-<version>.vsix` from this repository's [Releases](https://github.com/smurflabs/Agentic_vscode/releases) or from **Apps & updates** in the Agentic web app.
+2. Install it:
+
+   ```text
+   code --install-extension agentic-vscode-<version>.vsix
+   ```
+
+   You can also use the Extensions view: **…** → **Install from VSIX…**.
+3. Run **Agentic: Sign In** and enter your server's address and an API key. To create the key, open the web app's user menu, then **API key** → **Generate**.
 
 ## Settings
 
-| Setting | Default | |
-| --- | --- | --- |
-| `agentic.serverUrl` | | Your Agentic server |
+| Setting | Default | What it does |
+|---|---|---|
+| `agentic.serverUrl` | (empty) | Your Agentic server |
+| `agentic.chat.mode` | `full` | `full` (every page of the web app) or `lite` (chat only) |
 | `agentic.tools.enabled` | `true` | Workspace tools for the model |
 | `agentic.tools.allowCommands` | `true` | Let the model run shell commands |
-| `agentic.tools.shell` | `auto` | Shell for commands (PowerShell 7 / Windows PowerShell on Windows, bash / sh elsewhere) |
-| `agentic.tools.commandTimeoutSeconds` | `120` | Time limit for one command |
-| `agentic.chat.sendSelectionCommandsImmediately` | `true` | Explain / Fix / Review send at once (off: fill the message box) |
-| `agentic.chat.animations` | `calm` | `calm` (fades), `full` (the web app's animations) or `off` |
-| `agentic.speech.recorder` | | Dictation mode's recorder. Empty: Windows PowerShell (nothing to install) on Windows; `parecord`, `arecord`, `sox` or `ffmpeg` on Linux; `sox` or `ffmpeg` on macOS. Or a command that writes 16-bit mono PCM at 16 kHz to stdout |
-| `agentic.updates.enabled` | `true` | Check the Agentic server for new versions |
-| `agentic.updates.automatic` | `true` | Install them without asking first |
+| `agentic.tools.shell` | `auto` | Shell for commands: PowerShell on Windows, bash or sh elsewhere |
+| `agentic.tools.commandTimeoutSeconds` | `120` | How long a command runs before it goes on in the background |
+| `agentic.tools.ideTools` | `true` | Definitions, references and symbols from VS Code's language servers |
+| `agentic.tools.wholeComputer` | `false` | Let the tools work on files outside the workspace |
+| `agentic.tools.reviewEdits` | `true` | In Manual permission mode, show each change as a diff to accept or reject |
+| `agentic.mcp.includeVsCode`, `agentic.mcp.includeClaude` | `true` | Also use the MCP servers set up for VS Code, Claude Code and Claude Desktop |
+| `agentic.codeActions.enabled` | `true` | "Fix with Agentic" and "Explain with Agentic" in the light bulb menu |
+| `agentic.ide.bridge` | `true` | Let the Agentic CLI's `/ide` connect to this workspace |
+| `agentic.chat.sendSelectionCommandsImmediately` | `true` | Explain, Fix and Review send at once (off: fill the message box) |
+| `agentic.chat.animations` | `calm` | `calm`, `full` or `off` |
+| `agentic.speech.recorder` | (empty) | Dictation's recorder. Empty means PowerShell on Windows, or `parecord`, `arecord`, `sox` or `ffmpeg` elsewhere |
+| `agentic.updates.enabled`, `agentic.updates.automatic` | `true` | Check the server for new versions, and install them without asking |
 
-## Publishing to your server
+The `AGENTIC_SERVER` and `AGENTIC_API_KEY` environment variables also work, as in the Agentic CLI.
 
-`Agentic\tools\publish-clients.ps1 -Apps vscode` builds the .vsix and puts it in the server's updates folder
-(`updates\vscode`); the web app's *Apps & updates* page then offers it for download, and installed copies update to it.
-Bump `version` in package.json for each release.
+## Building
 
-## Build
-
+```text
+npm ci
+npm test                    # compile, then unit and proxy tests
+npm run package             # agentic-vscode-<version>.vsix (Node.js 20 or later)
+npm run test:integration    # real VS Code, isolated profile, temporary workspace
 ```
-npm install
-npm test          # compile + unit and proxy tests
-npm run package   # agentic-vscode-<version>.vsix (needs Node 20+)
-npm run test:integration   # real VS Code, isolated profile, temp workspace
-code --install-extension agentic-vscode-0.1.0.vsix
-```
 
-## Not in this version (desktop app only)
-
-Local MCP servers, Claude Code as a chat model, Claude Code skills, screenshots, global hotkeys and the tray icon.
+[SETUP.md](SETUP.md) covers development runs and releases.
 
 ## License
 
-Agentic for VS Code is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It comes WITHOUT ANY WARRANTY. See the `LICENSE` file for the full text.
+Agentic for VS Code is free software: you can redistribute it and/or modify it under the terms of the [GNU General Public License](LICENSE) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

@@ -6,3 +6,6 @@ node_modules/**
 **/*.ts
 tsconfig.json
 .gitignore
+docs/**
+SETUP.md
+.github/**

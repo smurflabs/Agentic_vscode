@@ -1,0 +1,48 @@
+# Publishes a GitHub release when a version tag (v0.2.24, ...) is pushed: the tests run, the extension is packaged as a
+# .vsix, and the release carries it with its SHA-256 sum. The notes are the annotated tag's message.
+name: Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check the version
+        id: version
+        run: |
+          project=$(node -p "require('./package.json').version")
+          if [ "$project" != "${GITHUB_REF_NAME#v}" ]; then echo "Tag $GITHUB_REF_NAME does not match version $project in package.json"; exit 1; fi
+          echo "version=$project" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test and package
+        run: |
+          npm ci
+          npm test
+          npm run package
+          ls -la *.vsix
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch --force --tags
+          vsix="agentic-vscode-${{ steps.version.outputs.version }}.vsix"
+          sha256sum "$vsix" > SHA256SUMS.txt && cat SHA256SUMS.txt
+          gh release create "$GITHUB_REF_NAME" "$vsix" SHA256SUMS.txt --title "Agentic for VS Code ${GITHUB_REF_NAME#v}" --notes-from-tag --verify-tag
