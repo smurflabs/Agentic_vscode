@@ -1,0 +1,193 @@
+/* Agentic VS Code layer: the web app inside a VS Code view. */
+html.vscode-app { --vs-gutter: 10px; }
+/* The sidebar is narrow: let the chat use it all. */
+html.vscode-app body { overscroll-behavior: none; }
+.vs-ws-btn .ic { vertical-align: -2px; margin-right: 2px; }
+.vs-signin { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--bg, #111) 85%, transparent); backdrop-filter: blur(2px); padding: 24px; text-align: center; }
+.vs-signin > div { max-width: 360px; background: var(--surface, #1e1e1e); border: 1px solid var(--border, #333); border-radius: 12px; padding: 18px 20px; }
+.vs-signin p { color: var(--muted, #999); margin: 8px 0 0; font-size: 13px; }
+
+/* Calm motion (the default in VS Code, setting agentic.chat.animations): pages and opened chats fade in instead of
+   rising in staggered steps. Movement while the view scrolls to the newest message made navigation look jumpy in the
+   narrow side bar; multitask panes in the web app use the same calmer style. */
+html.vscode-app.vs-motion-calm .main.enter > * { animation: fade-in .16s ease-out both !important; animation-delay: 0s !important; }
+html.vscode-app.vs-motion-calm .main.enter .grid > .card,
+html.vscode-app.vs-motion-calm .main.enter .agent-grid > .card,
+html.vscode-app.vs-motion-calm .main.enter tbody tr,
+html.vscode-app.vs-motion-calm .main.enter .tl-item,
+html.vscode-app.vs-motion-calm .main.enter .tabs a.active::after { animation: none !important; }
+html.vscode-app.vs-motion-calm .chat-thread.arriving > * { animation: fade-in .16s ease-out both !important; animation-delay: 0s !important; }
+html.vscode-app.vs-motion-calm .skeleton-page { animation-delay: 0s !important; }
+html.vscode-app.vs-motion-calm .chat-item.appear,
+html.vscode-app.vs-motion-calm .chat-item.still.appear { animation: fade-in .2s ease-out both !important; }
+html.vscode-app.vs-motion-calm .mt-pane.arrive { animation: fade-in .2s ease-out both !important; animation-delay: 0s !important; }
+
+/* Theme changes from VS Code apply at once, without every colour transitioning (a visible flash). */
+html.vs-instant, html.vs-instant *, html.vs-instant *::before, html.vs-instant *::after { transition: none !important; }
+
+/* The phone's bottom tab bar (Chat, Overview, Agents, Inbox, Menu) is for phones only. In VS Code's narrow views the
+   top bar's menu button reaches every page, and the space the bar reserved goes back to the chat. This file loads only
+   inside VS Code, so it applies from the first paint. */
+.tabbar { display: none !important; }
+:root { --tab-h: 0px !important; }
+
+/* VS Code's view title already names Agentic: in narrow views the logo goes and the top bar is slimmer, so the chat gets
+   the room. */
+@media (max-width: 900px) {
+  html.vscode-app { --top-h: 46px; }
+  html.vscode-app .top-brand { display: none; }
+  html.vscode-app .menu-toggle, html.vscode-app .top-actions .top-search, html.vscode-app .top-actions .btn.primary { width: 36px; height: 36px; }
+  html.vscode-app #whoami { width: 30px; height: 30px; }
+}
+
+/* Claude Code chip and its options (Chat, when the model is Claude Code). */
+.dk-claude-wrap .chip-toggle .ic { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+.dk-claude-wrap .chip-toggle b { font-weight: 600; opacity: .8; margin-left: 2px; }
+.dk-claude-menu { width: min(420px, calc(100vw - 24px)); max-height: min(70vh, 640px); overflow: auto; }
+.dk-cl-form { display: flex; flex-direction: column; gap: 9px; padding: 4px 6px 8px; }
+.dk-cl-form label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.dk-cl-form label .muted { font-weight: 400; }
+.dk-cl-form select, .dk-cl-form input, .dk-cl-form textarea { font-size: 13px; }
+.dk-cl-form textarea { resize: vertical; font-family: var(--mono); }
+.dk-cl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dk-cl-more summary { cursor: pointer; font-size: 12.5px; color: var(--accent); margin: 2px 0 6px; }
+.dk-cl-more[open] { display: flex; flex-direction: column; gap: 9px; }
+.dk-cl-session { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 8px; }
+.dk-cl-session .btn { margin-left: auto; }
+
+
+/* ---------------------------------------------------------------- Lite mode: the chat only, looking like Claude Code
+   (setting agentic.chat.mode = lite; the page is opened with ?lite=1). The app's other pages, bars and chrome go; the
+   thread is a terminal-like transcript in the editor's monospace font. */
+html.vs-lite { --top-h: 0px !important; }
+html.vs-lite #sidebar, html.vs-lite .nav-backdrop, html.vs-lite .topbar, html.vs-lite .tabbar { display: none !important; }
+html.vs-lite .workspace { margin-left: 0 !important; width: 100% !important; max-width: none !important; }
+html.vs-lite .main { padding: 0 !important; }
+html.vs-lite .chat-app { border-radius: 0; }
+html.vs-lite .chat-app .chat-side { display: none !important; }
+html.vs-lite.vs-side .chat-app .chat-side { display: flex !important; position: absolute; z-index: 25; left: 0; top: 0; bottom: 0; width: min(300px, 92vw); box-shadow: var(--shadow-lg); transform: none !important; visibility: visible !important; border-right: 1px solid var(--border); }
+html.vs-lite .chat-top .mt-toggle, html.vs-lite .chat-top #temp-slot, html.vs-lite .chat-top #tps-slot { display: none !important; }
+html.vs-lite .chat-top { padding: 4px 8px; gap: 4px; border-bottom: 1px solid var(--border); font-family: var(--mono); }
+html.vs-lite .vs-full-btn { font-family: var(--mono); font-size: 11.5px; }
+html.vs-lite .vs-full-btn .ic { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; vertical-align: -2px; margin-right: 3px; }
+
+/* The transcript: no bubbles, no avatars; "> " before what you said, "●" before each answer and tool, "⎿" before details. */
+html.vs-lite .chat-thread { font-family: var(--mono); font-size: 12.5px; line-height: 1.55; max-width: none; padding: 10px 12px 18px; gap: 10px; }
+html.vs-lite .chat-thread .md, html.vs-lite .chat-thread p, html.vs-lite .chat-thread li { font-family: var(--mono); font-size: 12.5px; }
+html.vs-lite .chat-thread .md h1, html.vs-lite .chat-thread .md h2, html.vs-lite .chat-thread .md h3 { font-family: var(--mono); font-size: 13px; margin: 8px 0 4px; }
+html.vs-lite .msg.user { justify-content: flex-start; }
+html.vs-lite .msg.user .bubble-u { max-width: 100%; background: transparent; border: 0; border-left: 2px solid var(--border-strong); border-radius: 0; padding: 2px 0 2px 12px; position: relative; color: var(--text-2); }
+html.vs-lite .msg.user .bubble-u::before { content: ">"; position: absolute; left: -14px; top: 2px; color: var(--muted); }
+html.vs-lite .msg.user .bubble-u .md { padding-left: 2px; }
+html.vs-lite .msg.user.new .bubble-u { animation: none; }
+html.vs-lite .msg.assistant, html.vs-lite .msg.agent-report { display: block; position: relative; padding-left: 16px; }
+html.vs-lite .msg.assistant::before { content: "●"; position: absolute; left: 0; top: 0; color: var(--text); font-size: 12px; }
+html.vs-lite .msg.assistant.streaming::before { animation: pulse-ring 1.2s infinite; color: var(--accent); }
+html.vs-lite .msg .avatar, html.vs-lite .msg.assistant .msg-head { display: none !important; }
+html.vs-lite .msg-actions { opacity: 0; }
+html.vs-lite .msg:hover .msg-actions { opacity: .8; }
+
+/* Tool calls: one line each (● Read src/app.js  +3 −1), details indented under "⎿". */
+html.vs-lite .tool-card { border: 0; background: transparent !important; border-radius: 0; margin: 2px 0; animation: none; }
+html.vs-lite .tool-card summary { padding: 1px 0; gap: 6px; font-family: var(--mono); font-size: 12.5px; background: transparent; }
+html.vs-lite .tool-card summary .ic, html.vs-lite .tool-card summary .spinner { width: 12px; height: 12px; }
+html.vs-lite .tool-card.running summary .tool-progress { color: var(--accent); }
+html.vs-lite .tool-card .tool-io { margin: 0 0 4px 18px; padding: 2px 0 2px 10px; border-left: 2px solid var(--border); border-radius: 0; background: transparent; position: relative; font-size: 12px; }
+html.vs-lite .tool-card .tool-io::before { content: "⎿"; position: absolute; left: -16px; top: 0; color: var(--muted); }
+html.vs-lite .tool-card .tool-io pre { background: transparent; border: 0; padding: 0; font-size: 12px; }
+html.vs-lite .tool-card.subagent-card { border-left: 2px solid var(--border); padding-left: 8px; }
+html.vs-lite .read-group summary, html.vs-lite .sources summary { font-family: var(--mono); }
+
+/* The message box: a plain bordered box with a "> " prompt; the chips and controls in a compact row under it, and the
+   status line below, like Claude Code's "accept edits on (shift+tab to cycle)". */
+html.vs-lite .composer-wrap { padding: 0 8px 6px; }
+html.vs-lite .composer { border-radius: 4px; box-shadow: none; padding: 6px 8px 4px 24px; position: relative; background: var(--surface); }
+html.vs-lite .composer::before { content: ">"; position: absolute; left: 10px; top: 10px; color: var(--muted); font-family: var(--mono); font-size: 13px; }
+html.vs-lite .composer:focus-within { box-shadow: none; border-color: var(--border-strong); }
+html.vs-lite .composer textarea { font-family: var(--mono); font-size: 12.5px; line-height: 1.5; padding: 3px 0; min-height: 22px; }
+html.vs-lite .composer-bar { gap: 3px; margin-left: -16px; }
+html.vs-lite .composer-bar .chip-toggle, html.vs-lite .composer-bar .combo-btn, html.vs-lite .composer-bar .btn.small { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 3px; }
+html.vs-lite .composer-bar .chip-toggle svg { width: 12px; height: 12px; }
+html.vs-lite .composer-hint { font-family: var(--mono); font-size: 11px; text-align: left; margin: 4px 0 0 2px; max-width: none; }
+html.vs-lite .ask-pop, html.vs-lite .appr-pop, html.vs-lite .goal-bar { max-width: none; font-family: var(--mono); }
+html.vs-lite .appr-card, html.vs-lite .ask-card { border-radius: 4px; }
+html.vs-lite .todo-dock, html.vs-lite .task-dock { font-family: var(--mono); font-size: 12px; border-radius: 4px; }
+html.vs-lite .to-bottom { right: 12px; }
+/* The app's later rules (mobile layout, the bar's one-row scroll): the lite layout wins. */
+html.vs-lite .msg.user { align-items: flex-start !important; justify-content: flex-start !important; }
+html.vs-lite .msg.user .bubble-u { max-width: 100% !important; font-size: 12.5px !important; margin-left: 14px; }
+html.vs-lite .composer-bar { flex-wrap: nowrap !important; }
+html.vs-lite .composer-bar .chip-toggle { height: 22px; padding: 0 7px; }
+html.vs-lite .composer-bar .attach-btn, html.vs-lite .composer-bar .mic-btn, html.vs-lite .composer-bar .send-btn { width: 26px; height: 26px; }
+html.vs-lite .composer-bar > .spacer { flex: 1 1 0; min-width: 4px; }
+/* Wide views (an editor tab): the chat list is an overlay, not the grid's first column, and the chat fills the view. */
+html.vs-lite .chat-app, html.vs-lite .chat-app.side-closed { grid-template-columns: minmax(0, 1fr) !important; height: 100vh !important; }
+html.vs-lite .chat-app .chat-side { grid-column: 1; }
+html.vs-lite .chat-app .chat-main { grid-column: 1; }
+html.vs-lite .chat-thread { max-width: 960px; }
+/* The tool chips show only their icons (the name is in the tooltip); a count badge stays as a small corner mark. */
+html.vs-lite .composer-bar .chip-toggle { font-size: 0 !important; width: 26px; height: 24px; padding: 0 !important; justify-content: center; gap: 0 !important; position: relative; }
+html.vs-lite .composer-bar .chip-toggle svg { width: 14px !important; height: 14px !important; margin: 0; }
+html.vs-lite .composer-bar .chip-toggle b { position: absolute; top: -5px; right: -5px; font-size: 9px; min-width: 13px; height: 13px; line-height: 13px; padding: 0 3px; margin: 0; }
+html.vs-lite .composer-bar .chip-toggle.on { box-shadow: inset 0 0 0 1px var(--accent); }
+/* The device chip in the chat bar (the computer whose tools this chat uses) stays short: icon, live dot and the start of the name. */
+html.vs-lite .chat-top .device-chip { font-size: 10.5px; padding: 1px 6px; gap: 4px; max-width: 120px; margin-left: 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; display: inline-block; line-height: 16px; vertical-align: middle; }
+html.vs-lite .chat-top .device-chip .ic { width: 11px; height: 11px; vertical-align: -2px; margin-right: 2px; }
+html.vs-lite .chat-top .device-chip.online::after { display: inline-block; vertical-align: middle; margin-left: 3px; width: 5px; height: 5px; }
+html.vs-lite .chat-side-top { display: flex; align-items: center; gap: 6px; }
+html.vs-lite .vs-side-close .ic { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+/* The user menu (theme, sounds, shortcuts, balance, sign out) stays reachable: the top bar's user button alone, at the top right. */
+html.vs-lite .topbar { display: block !important; position: fixed; top: 0; right: 0; left: auto; width: auto; height: 0; overflow: visible; z-index: 40; background: transparent; border: 0; padding: 0; margin: 0; box-shadow: none; }
+html.vs-lite .topbar > :not(.top-actions) { display: none !important; }
+html.vs-lite .top-actions > :not(.user-menu) { display: none !important; }
+html.vs-lite .top-actions { position: absolute; top: 5px; right: 8px; }
+html.vs-lite #whoami { height: 24px; width: auto; padding: 0 8px; font-size: 11px; font-family: var(--mono); }
+html.vs-lite .chat-top { padding-right: 86px; }
+
+/* ---- Menus from the row of controls (attach, tools, effort, permission mode, knowledge) open above the whole message box
+   at every width, as the phone layout does: the row never scrolls or clips them. */
+html.vs-lite .composer-bar { overflow: visible !important; }
+html.vs-lite .composer-bar .combo, html.vs-lite .composer-bar .tools-menu-wrap { position: static; }
+html.vs-lite .composer-bar .combo-menu, html.vs-lite .composer-bar .tools-menu, html.vs-lite .composer-bar .attach-menu {
+  left: 0 !important; right: 0 !important; top: auto !important; bottom: calc(100% + 8px) !important; width: auto !important; max-width: none !important;
+  max-height: min(60vh, 520px); overflow: auto; transform-origin: bottom center; font-size: 12.5px; font-family: var(--mono); border-radius: 6px; }
+html.vs-lite .composer-bar .menu button, html.vs-lite .composer-bar .menu label, html.vs-lite .composer-bar .menu .tool-opt { font-size: 12.5px; }
+
+/* ---- Narrow views keep the controls that matter: chips go in order of usefulness as the width shrinks (the full app's
+   own fitting then shrinks what is left). */
+@media (max-width: 820px) {
+  html.vs-lite .composer-bar [data-key="diffusion"], html.vs-lite .composer-bar [data-key="music"], html.vs-lite .composer-bar [data-key="videoGeneration"],
+  html.vs-lite .composer-bar [data-key="imageGeneration"], html.vs-lite .composer-bar [data-key="markets"], html.vs-lite .composer-bar [data-key="stocks"],
+  html.vs-lite .composer-bar [data-key="polymarket"], html.vs-lite .composer-bar [data-key="news"] { display: none !important; }
+}
+@media (max-width: 620px) {
+  html.vs-lite .composer-bar [data-act="caveman-off"], html.vs-lite .composer-bar [data-act="open-limits"], html.vs-lite .composer-bar #run-btn,
+  html.vs-lite .composer-bar #files-btn, html.vs-lite .composer-bar #kb-btn, html.vs-lite .composer-bar [data-act="chat-temp"] { display: none !important; }
+}
+@media (max-width: 460px) {
+  html.vs-lite .composer-bar [data-key="codeInterpreter"], html.vs-lite .composer-bar #ins-btn, html.vs-lite .composer-bar .mic-btn { display: none !important; }
+}
+
+/* ---- The user button: one look at every width (a small pill with the name) and its menu right under it. */
+html.vs-lite #whoami { font-size: 11px !important; width: auto !important; height: 24px !important; padding: 0 8px !important; border-radius: 6px !important;
+  background: var(--surface-2) !important; color: var(--text) !important; border: 1px solid var(--border) !important; font-family: var(--mono); font-weight: 600;
+  display: inline-flex; align-items: center; max-width: 120px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+html.vs-lite #whoami::before { content: none !important; }
+html.vs-lite #whoami:hover { border-color: var(--border-strong) !important; background: var(--surface-3) !important; }
+html.vs-lite #user-menu { position: absolute !important; left: auto !important; right: 0 !important; top: calc(100% + 6px) !important;
+  width: min(300px, calc(100vw - 16px)); min-width: 0 !important; max-height: min(70vh, 560px) !important; overflow: auto; border-radius: 8px; padding: 5px; }
+html.vs-lite #user-menu button, html.vs-lite #user-menu a.menu-link { padding: 7px 10px; font-size: 12.5px; font-family: var(--mono); white-space: nowrap; }
+html.vs-lite #user-menu .menu-title { font-size: 11px; }
+
+/* ---- Too narrow for the chat bar's extras: first the Full app button goes (the command and the title button remain), then the user button. */
+@media (max-width: 400px) { html.vs-lite .vs-full-btn { display: none !important; } html.vs-lite .chat-top { padding-right: 70px; } }
+@media (max-width: 340px) { html.vs-lite .topbar { display: none !important; } html.vs-lite .chat-top { padding-right: 8px; } }
+
+/* ---- Find, outline and transcript mode in the chat bar: small in lite; outline and transcript go first when narrow (their keys still work). */
+html.vs-lite .chat-top .nav-slot .btn.icon { width: 24px; height: 24px; padding: 0; }
+html.vs-lite .chat-top .nav-slot .btn.icon .ic { width: 14px; height: 14px; }
+html.vs-lite .find-bar, html.vs-lite .pin-bar { padding-left: 8px; padding-right: 8px; font-family: var(--mono); }
+html.vs-lite .chat-outline { top: 40px; width: min(260px, 80vw); }
+@media (max-width: 480px) { html.vs-lite .chat-top .nav-slot [data-act="outline-toggle"], html.vs-lite .chat-top .nav-slot [data-act="transcript-toggle"] { display: none !important; } }
+@media (max-width: 360px) { html.vs-lite .chat-top .nav-slot { display: none !important; } }

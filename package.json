@@ -1,0 +1,540 @@
+{
+  "name": "agentic-vscode",
+  "displayName": "Agentic",
+  "description": "Your Agentic server in VS Code: chat with every model, custom model, goal and plan, with tools that read, edit and run things in your workspace.",
+  "version": "0.2.24",
+  "publisher": "smurflabs",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/smurflabs/Agentic_vscode.git"
+  },
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "AI",
+    "Chat",
+    "Other"
+  ],
+  "keywords": [
+    "agentic",
+    "ai",
+    "chat",
+    "agent"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agentic",
+          "title": "Agentic",
+          "icon": "media/agentic.svg",
+          "when": "agentic:noSecondarySidebar"
+        }
+      ],
+      "secondarySidebar": [
+        {
+          "id": "agentic-secondary",
+          "title": "Agentic",
+          "icon": "media/agentic.svg",
+          "when": "!agentic:noSecondarySidebar"
+        }
+      ]
+    },
+    "views": {
+      "agentic": [
+        {
+          "type": "webview",
+          "id": "agentic.chatView",
+          "name": "Chat"
+        }
+      ],
+      "agentic-secondary": [
+        {
+          "type": "webview",
+          "id": "agentic.chatViewSecondary",
+          "name": "Chat"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "agentic.openChat",
+        "title": "Open Chat",
+        "category": "Agentic",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "agentic.openChatInEditor",
+        "title": "Open Chat in Editor",
+        "category": "Agentic",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "agentic.openMultitask",
+        "title": "Multitask: Chats Side by Side",
+        "category": "Agentic",
+        "icon": "$(layout)"
+      },
+      {
+        "command": "agentic.newChat",
+        "title": "New Chat",
+        "category": "Agentic",
+        "icon": "$(add)"
+      },
+      {
+        "command": "agentic.askAboutSelection",
+        "title": "Ask About Selection",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.explainSelection",
+        "title": "Explain This Code",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.fixDiagnostic",
+        "title": "Fix This Problem",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.fixSelection",
+        "title": "Fix This Code",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.reviewFile",
+        "title": "Review This File",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.fixProblems",
+        "title": "Fix Problems in This File",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.addFileToChat",
+        "title": "Add File to Chat",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.signIn",
+        "title": "Sign In",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.signOut",
+        "title": "Sign Out",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.reload",
+        "title": "Reload Chat",
+        "category": "Agentic",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "agentic.openInBrowser",
+        "title": "Open Agentic in Browser",
+        "category": "Agentic",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "agentic.keyboardShortcuts",
+        "title": "Keyboard Shortcuts",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.showLog",
+        "title": "Show Log",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.checkForUpdates",
+        "title": "Check for Updates",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.runProject",
+        "title": "Run Project…",
+        "category": "Agentic",
+        "icon": "$(play)"
+      },
+      {
+        "command": "agentic.openArtifacts",
+        "title": "Artifacts: Run and Share Projects",
+        "category": "Agentic",
+        "icon": "$(package)"
+      },
+      {
+        "command": "agentic.liteMode",
+        "title": "Lite Mode (chat only, like Claude Code)",
+        "category": "Agentic",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "agentic.fullMode",
+        "title": "Full App",
+        "category": "Agentic",
+        "icon": "$(layout)"
+      },
+      {
+        "command": "agentic.toggleChatMode",
+        "title": "Switch Lite Mode / Full App",
+        "category": "Agentic"
+      },
+      {
+        "command": "agentic.mcpServers",
+        "title": "MCP Servers: Add, Allow and Sign In",
+        "category": "Agentic",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "agentic.addMcpServer",
+        "title": "Add MCP Server…",
+        "category": "Agentic",
+        "icon": "$(add)"
+      },
+      {
+        "command": "agentic.openImages",
+        "title": "Images: Make Pictures (Stable Diffusion)",
+        "category": "Agentic",
+        "icon": "$(file-media)"
+      },
+      {
+        "command": "agentic.openMusic",
+        "title": "Music: Make Songs (Suno)",
+        "category": "Agentic",
+        "icon": "$(music)"
+      },
+      {
+        "command": "agentic.openAudio",
+        "title": "Audio: Speech and Voices",
+        "category": "Agentic",
+        "icon": "$(unmute)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "agentic.fixDiagnostic",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "agentic.runProject",
+          "when": "(view == agentic.chatView || view == agentic.chatViewSecondary) && workspaceFolderCount > 0",
+          "group": "navigation@0"
+        },
+        {
+          "command": "agentic.liteMode",
+          "when": "(view == agentic.chatView || view == agentic.chatViewSecondary) && !agentic.liteMode",
+          "group": "navigation@1"
+        },
+        {
+          "command": "agentic.fullMode",
+          "when": "(view == agentic.chatView || view == agentic.chatViewSecondary) && agentic.liteMode",
+          "group": "navigation@1"
+        },
+        {
+          "command": "agentic.openArtifacts",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.mcpServers",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.openImages",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.openMusic",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.openAudio",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.newChat",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "navigation@1"
+        },
+        {
+          "command": "agentic.openMultitask",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "navigation@2"
+        },
+        {
+          "command": "agentic.openChatInEditor",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "navigation@3"
+        },
+        {
+          "command": "agentic.reload",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "navigation@4"
+        },
+        {
+          "command": "agentic.openInBrowser",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.signOut",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        },
+        {
+          "command": "agentic.checkForUpdates",
+          "when": "view == agentic.chatView || view == agentic.chatViewSecondary",
+          "group": "1_more"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "agentic.editorMenu",
+          "group": "1_modification@99"
+        }
+      ],
+      "agentic.editorMenu": [
+        {
+          "command": "agentic.askAboutSelection",
+          "when": "editorHasSelection",
+          "group": "1_ask@1"
+        },
+        {
+          "command": "agentic.explainSelection",
+          "when": "editorHasSelection",
+          "group": "1_ask@2"
+        },
+        {
+          "command": "agentic.fixSelection",
+          "when": "editorHasSelection",
+          "group": "1_ask@3"
+        },
+        {
+          "command": "agentic.reviewFile",
+          "group": "2_file@1"
+        },
+        {
+          "command": "agentic.fixProblems",
+          "group": "2_file@2"
+        },
+        {
+          "command": "agentic.addFileToChat",
+          "group": "2_file@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "agentic.addFileToChat",
+          "when": "!explorerResourceIsFolder",
+          "group": "7_modification@99"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "agentic.addFileToChat",
+          "group": "1_close@99"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "agentic.editorMenu",
+        "label": "Agentic"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "agentic.openChat",
+        "key": "ctrl+alt+a",
+        "mac": "cmd+alt+a"
+      },
+      {
+        "command": "agentic.askAboutSelection",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
+        "when": "editorTextFocus"
+      }
+    ],
+    "configuration": {
+      "title": "Agentic",
+      "properties": {
+        "agentic.serverUrl": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Address of your Agentic server, e.g. `https://agentic.example.com`. Falls back to the `AGENTIC_SERVER` environment variable (as the Agentic CLI does). The API key is kept in VS Code's secret storage: run **Agentic: Sign In**."
+        },
+        "agentic.tools.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Let the chat model use tools in this workspace: read, search and edit files, see problems and the selection, and call the Agentic API as you. Changes are approved in the chat according to its permission mode."
+        },
+        "agentic.usage.ccusageLog": {
+          "type": "boolean",
+          "default": true,
+          "description": "Log each chat answer's tokens in Claude Code's log format, so npx ccusage reports Agentic usage (projects/agentic-vscode-… in ~/.config/claude, or ~/.claude when Claude Code is not installed)."
+        },
+        "agentic.tools.reviewEdits": {
+          "type": "boolean",
+          "default": true,
+          "description": "In Manual permission mode, show each file change the chat model makes as a diff to Accept or Reject before it is saved (Auto mode never asks). Revert single changes with the arrows in the diff's margin to accept only part of it."
+        },
+        "agentic.codeActions.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Offer \"Fix with Agentic\" on problems and \"Explain with Agentic\" / \"Fix with Agentic\" on a selection in the light bulb (Ctrl+.)."
+        },
+        "agentic.ide.bridge": {
+          "type": "boolean",
+          "default": true,
+          "description": "Let the Agentic CLI in a terminal of this workspace (/ide) see the open file, the selection and problems, and show its edits here as diffs."
+        },
+        "agentic.tools.wholeComputer": {
+          "type": "boolean",
+          "default": false,
+          "description": "Let the tools read and change files anywhere on this computer. Off: a path outside the workspace (and the settings files' additionalDirectories) asks first — allow it once or its folder."
+        },
+        "agentic.tools.ideTools": {
+          "type": "boolean",
+          "default": true,
+          "description": "Give the chat model VS Code's own abilities: definitions, references and symbols from the language servers, rename and quick fixes, tasks and the debugger, and running VS Code commands (each command is approved)."
+        },
+        "agentic.tools.vscodeTools": {
+          "type": "string",
+          "enum": [
+            "others",
+            "all",
+            "off"
+          ],
+          "default": "others",
+          "enumDescriptions": [
+            "Tools other extensions offer (not Copilot's own file and terminal tools, which Agentic has already, nor VS Code's MCP servers, which Agentic runs itself)",
+            "Every tool VS Code offers to language models",
+            "None"
+          ],
+          "description": "Tools other VS Code extensions offer to language models (vscode.lm.tools), for the chat model as vscode_tool__<name>."
+        },
+        "agentic.tools.allowCommands": {
+          "type": "boolean",
+          "default": true,
+          "description": "Let the chat model run shell commands in the workspace (each one is approved in the chat unless its permission mode is Auto)."
+        },
+        "agentic.tools.shell": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "pwsh",
+            "powershell",
+            "cmd",
+            "bash",
+            "sh",
+            "zsh"
+          ],
+          "default": "auto",
+          "description": "Shell for commands the model runs. Auto: PowerShell 7 or Windows PowerShell on Windows, bash or sh elsewhere."
+        },
+        "agentic.tools.commandTimeoutSeconds": {
+          "type": "integer",
+          "default": 120,
+          "minimum": 5,
+          "maximum": 3600,
+          "description": "How long run_command waits for a command before it goes on in the background (it is not stopped)."
+        },
+        "agentic.hooks.includeClaudeUser": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also run the hooks in Claude Code's own settings (~/.claude/settings.json). Hooks in .agentic/settings.json and in a project's .claude/settings.json always run."
+        },
+        "agentic.mcp.includeClaude": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use the MCP servers set up in Claude Code (~/.claude.json, its plugins) and Claude Desktop, as they are there (no import). A project's servers still start only after you allow them."
+        },
+        "agentic.mcp.includeVsCode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use VS Code's own MCP servers (.vscode/mcp.json, your user mcp.json and the \"mcp\" setting). Values VS Code would ask for (${input:…}) are asked once on the MCP Servers page and kept in VS Code's secret storage."
+        },
+        "agentic.chat.sendSelectionCommandsImmediately": {
+          "type": "boolean",
+          "default": true,
+          "description": "Explain / Fix / Review send their message at once. Off: they fill the message box for you to edit and send."
+        },
+        "agentic.speech.recorder": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Dictation mode records the microphone in VS Code (its views cannot). Empty: Windows PowerShell on Windows; `parecord`, `arecord`, `sox` or `ffmpeg` on Linux; `sox` or `ffmpeg` on macOS. Or a command line that writes 16-bit mono PCM at 16 kHz to stdout, e.g. `sox -q -d -t raw -r 16000 -e signed -b 16 -c 1 -`."
+        },
+        "agentic.chat.mode": {
+          "type": "string",
+          "enum": [
+            "full",
+            "lite"
+          ],
+          "default": "full",
+          "enumDescriptions": [
+            "The whole Agentic web app in the view: chat, agents, artifacts, images, settings and every other page",
+            "Only the chat, looking like Claude Code (monospace transcript, > you, ● answers and tools); the same tools, approvals and commands"
+          ],
+          "description": "What the Agentic view shows. Switch with Agentic: Lite Mode / Full App, the title button, or the Lite chip in the chat."
+        },
+        "agentic.chat.animations": {
+          "type": "string",
+          "enum": [
+            "calm",
+            "full",
+            "off"
+          ],
+          "enumDescriptions": [
+            "Pages and chats fade in (steady in the narrow side bar)",
+            "The web app's full animations",
+            "No animations"
+          ],
+          "default": "calm",
+          "markdownDescription": "Animations in the chat. **Off** is also used when VS Code's `workbench.reduceMotion` is on."
+        },
+        "agentic.updates.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Check the Agentic server for new versions of this extension (when VS Code starts and every few hours)."
+        },
+        "agentic.updates.automatic": {
+          "type": "boolean",
+          "default": true,
+          "description": "Install new versions from the Agentic server automatically (you are asked to reload the window). Off: you are asked first."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node --test test/core.test.js test/proxy.test.js test/usage.test.js test/run.test.js test/commands.test.js test/speech.test.js test/gaps.test.js test/fidelity.test.js test/mcp.test.js test/permissions.test.js test/hooksedit.test.js test/plugins.test.js",
+    "test:integration": "npm run compile && node integration/run.js",
+    "package": "vsce package --no-dependencies --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@types/vscode": "1.90.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^2.32.0",
+    "typescript": "~5.6.3"
+  }
+}
