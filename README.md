@@ -7,7 +7,7 @@
 ![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)
 ![VS Code 1.90+](https://img.shields.io/badge/VS%20Code-1.90%2B-007ACC)
 
-[Install](#install) · [Features](#features) · [Settings](#settings) · [Setup guide](SETUP.md) · [Agentic server](https://github.com/smurflabs/Agentic)
+[Install](#install) · [Screenshots](#screenshots) · [Features](#features) · [Settings](#settings) · [Setup guide](SETUP.md) · [Agentic server](https://github.com/smurflabs/Agentic)
 
 </div>
 
@@ -18,6 +18,27 @@
 Agentic for VS Code brings the chat of your [Agentic server](https://github.com/smurflabs/Agentic) into the editor. It is the same app as in the browser and the desktop app, with the same models, conversations and settings. The model gets tools that work through VS Code itself: its edits show in the editor and can be undone, it sees the Problems panel, and it runs commands in your workspace with your approval.
 
 The extension runs a small local server on `127.0.0.1`. That server forwards requests to your Agentic server and adds your API key, so the page never sees the key.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/screenshots/vscode-lite.png" alt="Agentic for VS Code in Lite mode next to VS Code's Chat and Claude Code"><br>
+      <sub><b>Lite mode</b>: just the chat, next to VS Code's own Chat and Claude Code.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/screenshots/vscode-lite-chat.png" alt="An answer with a runnable Python block: Run Python, Apply and Copy"><br>
+      <sub><b>Code blocks</b>: Run, Apply to a file, or Copy.</sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" valign="top">
+      <img src="docs/screenshots/vscode-full.png" alt="Agentic for VS Code in Full app mode" width="60%"><br>
+      <sub><b>Full app</b>: every page of the web app inside VS Code.</sub>
+    </td>
+  </tr>
+</table>
 
 ## Features
 
