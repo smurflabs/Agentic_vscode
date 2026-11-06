@@ -7,7 +7,7 @@
 ![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)
 ![VS Code 1.90+](https://img.shields.io/badge/VS%20Code-1.90%2B-007ACC)
 
-[Install](#install) · [Screenshots](#screenshots) · [Features](#features) · [Settings](#settings) · [Setup guide](SETUP.md) · [Agentic server](https://github.com/smurflabs/Agentic)
+[Install](#install) · [Screenshots](#screenshots) · [Features](#features) · [MCP servers](#mcp-servers) · [Settings](#settings) · [Setup guide](SETUP.md) · [Agentic server](https://github.com/smurflabs/Agentic)
 
 </div>
 
@@ -79,6 +79,68 @@ The extension runs a small local server on `127.0.0.1`. That server forwards req
 - **Agentic CLI link:** the CLI's `/ide` sends your selection, shows its edits as diffs here and reads the Problems panel.
 - **Keyboard shortcuts:** change the chat's keys and VS Code's keys for Agentic in one place.
 - **Updates:** the extension installs new versions from your Agentic server.
+
+## MCP servers
+
+The chat in VS Code gets [MCP](https://modelcontextprotocol.io) tools from the Agentic server, from VS Code, and from the MCP servers you already use.
+
+### Ready without any setup
+
+- **Your Agentic server's MCP servers.** These are the server's [16 built-in tool servers](https://github.com/smurflabs/Agentic#built-in-tool-servers) (storage, git, documents, database, data, files, code review, network checks, utilities and more), plus the servers you or your administrator added under **My MCP servers**. Turn them on in the chat's **Tools** menu. They run on the server, and you can use only the ones your account may use.
+- **VS Code's own tools.** These are built into the extension: the workspace tools, plus definitions, references and symbols from the language servers (`agentic.tools.ideTools`). Tools that other VS Code extensions offer to language models are also included (`agentic.tools.vscodeTools`).
+- **The MCP servers you already set up.** These are read live, with nothing to import:
+  - **Agentic:** `~/.agentic/mcp.json` (shared with the CLI), and the project's `.mcp.json` and `.agentic/mcp.json`.
+  - **Claude Code:** `~/.claude.json` (your servers and this project's), your plugins' servers, and Claude Desktop's servers (`agentic.mcp.includeClaude`).
+  - **VS Code:** `.vscode/mcp.json`, your user `mcp.json` and the `mcp` setting (`agentic.mcp.includeVsCode`). `${input:…}` values are asked for once and kept in VS Code's secret storage.
+- **The Agentic CLI link.** The CLI's `/ide` command connects to this window (`agentic.ide.bridge`).
+
+A project's servers (its `.mcp.json` or `.vscode/mcp.json`) start only after you allow them once, so a cloned repository can't run programs by itself.
+
+### Add your own
+
+**Agentic: Add MCP Server…** and **Agentic: MCP Servers: Add, Allow and Sign In** open the MCP page. It lists every server with its status and tools, and from there you can:
+- add a server from the catalog below, or by hand (a program over stdio, a Streamable HTTP URL or an SSE URL)
+- allow a project's servers
+- sign in to hosted servers that use OAuth
+- switch servers on and off
+
+Other ways to add one:
+- **Install on my computer:** on the web app's **My MCP servers** page, this sends a server to this VS Code window, and its form opens filled in.
+- **Edit the files directly:** any of the files above, in Claude Code's layout or VS Code's. Values can use `${VAR}`, `${VAR:-default}`, `${env:VAR}`, `${workspaceFolder}` and `${userHome}`.
+
+```json
+{ "mcpServers": {
+    "files":  { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"] },
+    "remote": { "type": "http", "url": "https://example.com/mcp", "headers": { "Authorization": "Bearer ${env:MY_TOKEN}" } } } }
+```
+
+**The catalog.** The same 21 well-known servers as in the web app, the desktop app and the CLI:
+
+| Server | What it does | Needs |
+|---|---|---|
+| Filesystem | Read, search and edit files in the folders you allow | Node.js |
+| Git | Read a Git repository: status, diffs, log, branches and commits | uv (Python) |
+| GitHub | GitHub's official server: repositories, issues, pull requests, code search and Actions (hosted) | A GitHub token |
+| Desktop Commander | Terminal commands, processes and file editing on the computer it runs on | Node.js |
+| Playwright browser | Microsoft's browser automation: open pages, click, type, fill forms and read pages | Node.js 20+ |
+| Chrome DevTools | Google's server for Chrome: drive the browser, read the console and network, record performance traces | Node.js 20.19+ and Chrome |
+| Fetch | Download a web page and turn it into Markdown | uv (Python) |
+| Firecrawl | Scrape, crawl and extract structured data from websites, including JavaScript-heavy ones | Node.js 22+ and a Firecrawl API key |
+| Brave Search | Web, news, image and local search through Brave's own index | Node.js and a Brave Search API key |
+| Tavily | Search built for AI agents, with page extraction and site crawling | Node.js and a Tavily API key |
+| Exa | Neural web search: pages by meaning, research papers, companies and code | Node.js 20+ and an Exa API key |
+| Context7 | Current documentation and code examples for thousands of libraries | Node.js 20+ |
+| Microsoft Learn | Search and read Microsoft's documentation: .NET, Azure, Windows, Microsoft 365 (hosted) | Nothing |
+| DeepWiki | Ask questions about any public GitHub repository and read its generated wiki (hosted) | Nothing |
+| AWS Documentation | Search and read AWS documentation | uv (Python) |
+| Notion | Search, read and update pages and databases in your Notion workspace | Node.js and a Notion integration token |
+| Supabase | Query and manage Supabase projects: tables, SQL, migrations and logs (read-only by default) | Node.js and a Supabase access token |
+| Memory | A knowledge graph the model stores facts in and recalls across sessions | Node.js |
+| Sequential Thinking | Structured step-by-step reasoning that the model can revise and branch | Node.js |
+| Time | The current time in any time zone, and conversions | uv (Python) |
+| REA | Reverse engineering of native binaries, .NET assemblies, JS/Electron apps, Android APKs and websites | Node.js 22+; optionally Ghidra, Hopper or IDA |
+
+While VS Code is open, chats in the web and desktop apps can use these servers too.
 
 ## Install
 
